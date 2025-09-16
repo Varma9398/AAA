@@ -589,13 +589,6 @@ input:focus, select:focus, textarea:focus {
   padding: 16px 18px;
 }
 
-.image-prompt {
-  font-size: 13px;
-  color: #6f7a83;
-  margin-bottom: 12px;
-  line-height: 1.4;
-}
-
 .image-actions {
   display: flex;
   gap: 10px;

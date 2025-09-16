@@ -37,9 +37,6 @@ export function ImageGallery({ images }: ImageGalleryProps) {
           <div key={image.id} className="image-card">
             <img src={image.url} alt="Paper art transformation" loading="lazy" />
             <div className="image-info">
-              <div className="image-prompt">
-                {image.prompt.substring(0, 100)}...
-              </div>
               <div className="image-actions">
                 <button
                   className="action-btn download-btn"
