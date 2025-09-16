@@ -27,6 +27,34 @@ export function Dashboard() {
   const [styleIntensity, setStyleIntensity] = useState<StyleIntensity>('moderate');
   const [aspectRatio, setAspectRatio] = useState<AspectRatio>('1:1');
 
+  // Load user preferences from localStorage on component mount
+  useEffect(() => {
+    const savedPreferences = localStorage.getItem('userPreferences');
+    if (savedPreferences) {
+      try {
+        const preferences = JSON.parse(savedPreferences);
+        if (preferences.styleIntensity) {
+          setStyleIntensity(preferences.styleIntensity);
+        }
+        if (preferences.aspectRatio) {
+          setAspectRatio(preferences.aspectRatio);
+        }
+      } catch (error) {
+        console.error('Failed to load user preferences:', error);
+      }
+    }
+  }, []);
+
+  // Save user preferences to localStorage whenever they change
+  useEffect(() => {
+    const preferences = {
+      styleIntensity,
+      aspectRatio,
+      timestamp: new Date().toISOString()
+    };
+    localStorage.setItem('userPreferences', JSON.stringify(preferences));
+  }, [styleIntensity, aspectRatio]);
+
   // Load image history from localStorage on component mount
   useEffect(() => {
     const savedHistory = localStorage.getItem('imageHistory');

@@ -15,7 +15,21 @@ export function Landing() {
   const batchSize = 24;
   const totalImages = 57;
 
+  // Load state from localStorage on component mount
   useEffect(() => {
+    const savedState = localStorage.getItem('landingPageState');
+    let savedCurrentIndex = batchSize;
+    let savedDisplayedImages: GalleryImage[] = [];
+
+    if (savedState) {
+      try {
+        const parsed = JSON.parse(savedState);
+        savedCurrentIndex = parsed.currentIndex || batchSize;
+      } catch (error) {
+        console.error('Failed to load landing page state:', error);
+      }
+    }
+
     // Generate gallery images from local images
     const images: GalleryImage[] = [];
     for (let i = 1; i <= totalImages; i++) {
@@ -29,10 +43,22 @@ export function Landing() {
     }
     setGalleryImages(images);
     
-    // Load first batch
-    setDisplayedImages(images.slice(0, batchSize));
-    setCurrentIndex(batchSize);
+    // Load images up to saved index or first batch
+    const imagesToShow = images.slice(0, savedCurrentIndex);
+    setDisplayedImages(imagesToShow);
+    setCurrentIndex(savedCurrentIndex);
   }, []);
+
+  // Save state to localStorage whenever currentIndex changes
+  useEffect(() => {
+    if (currentIndex > 0) {
+      const stateToSave = {
+        currentIndex,
+        timestamp: new Date().toISOString()
+      };
+      localStorage.setItem('landingPageState', JSON.stringify(stateToSave));
+    }
+  }, [currentIndex]);
 
   const loadMore = () => {
     const nextIndex = Math.min(currentIndex + batchSize, totalImages);
