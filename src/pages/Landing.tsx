@@ -13,18 +13,18 @@ export function Landing() {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const batchSize = 24;
-  const totalImages = 48;
+  const totalImages = 57;
 
   useEffect(() => {
-    // Generate gallery images
+    // Generate gallery images from local images
     const images: GalleryImage[] = [];
     for (let i = 1; i <= totalImages; i++) {
       const num = String(i).padStart(3, '0');
       images.push({
         id: `img-${i}`,
-        src: `https://picsum.photos/400/600?random=${i}`,
+        src: `/images/${num}.png`,
         title: `Image ${num}`,
-        description: `Gallery item ${num}`
+        description: `AI Generated Image ${num}`
       });
     }
     setGalleryImages(images);
