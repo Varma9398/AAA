@@ -12,8 +12,8 @@ export function Landing() {
   const [displayedImages, setDisplayedImages] = useState<GalleryImage[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const batchSize = 24;
-  const totalImages = 57;
+  const batchSize = 12;
+  const totalImages = 23;
 
   // Load state from localStorage on component mount
   useEffect(() => {
@@ -24,7 +24,7 @@ export function Landing() {
     if (savedState) {
       try {
         const parsed = JSON.parse(savedState);
-        savedCurrentIndex = parsed.currentIndex || batchSize;
+        savedCurrentIndex = Math.min(parsed.currentIndex || batchSize, totalImages);
       } catch (error) {
         console.error('Failed to load landing page state:', error);
       }
@@ -34,9 +34,11 @@ export function Landing() {
     const images: GalleryImage[] = [];
     for (let i = 1; i <= totalImages; i++) {
       const num = String(i).padStart(3, '0');
+      // Handle mixed file extensions (008 is JPG, others are PNG)
+      const extension = i === 8 ? 'jpg' : 'png';
       images.push({
         id: `img-${i}`,
-        src: `/images/${num}.png`,
+        src: `/images/${num}.${extension}`,
         title: `Image ${num}`,
         description: `AI Generated Image ${num}`
       });

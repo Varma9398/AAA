@@ -1,11 +1,24 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useCredits } from '../hooks/useCredits';
 
 export function CreditInfo() {
   const { creditData, DAILY_CREDIT_LIMIT } = useCredits();
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [prevCredits, setPrevCredits] = useState(creditData.creditsRemaining);
+
+  // Animate when credits change
+  useEffect(() => {
+    if (prevCredits !== creditData.creditsRemaining) {
+      setIsUpdating(true);
+      const timer = setTimeout(() => setIsUpdating(false), 800);
+      setPrevCredits(creditData.creditsRemaining);
+      return () => clearTimeout(timer);
+    }
+  }, [creditData.creditsRemaining, prevCredits]);
 
   const getCreditInfoClass = () => {
-    return creditData.creditsRemaining === 0 ? 'credit-info no-credits' : 'credit-info';
+    let baseClass = creditData.creditsRemaining === 0 ? 'credit-info no-credits' : 'credit-info';
+    return isUpdating ? `${baseClass} credit-updating` : baseClass;
   };
 
   return (

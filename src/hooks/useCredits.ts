@@ -1,8 +1,29 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import type { CreditData } from '../types';
 
 const DAILY_CREDIT_LIMIT = 10;
 const CREDIT_COST_PER_IMAGE = 1;
+
+// Credit update event system for real-time updates
+const CREDIT_UPDATE_EVENT = 'creditUpdate';
+
+class CreditEventManager {
+  private listeners: Set<() => void> = new Set();
+
+  addListener(callback: () => void) {
+    this.listeners.add(callback);
+  }
+
+  removeListener(callback: () => void) {
+    this.listeners.delete(callback);
+  }
+
+  notifyListeners() {
+    this.listeners.forEach(callback => callback());
+  }
+}
+
+const creditEventManager = new CreditEventManager();
 
 export function useCredits() {
   const [creditData, setCreditData] = useState<CreditData>({
@@ -17,13 +38,8 @@ export function useCredits() {
     seconds: '00'
   });
 
-  useEffect(() => {
-    initializeCreditSystem();
-    const timer = setInterval(updateTimer, 1000);
-    return () => clearInterval(timer);
-  }, []);
-
-  function initializeCreditSystem() {
+  // Function to load current credit data from localStorage
+  const loadCreditData = useCallback(() => {
     const today = new Date().toDateString();
     const storedData = JSON.parse(localStorage.getItem('paperArtCredits') || '{}');
     
@@ -39,7 +55,20 @@ export function useCredits() {
     } else {
       setCreditData(storedData);
     }
-  }
+  }, []);
+
+  useEffect(() => {
+    loadCreditData();
+    const timer = setInterval(updateTimer, 1000);
+    
+    // Add listener for real-time updates
+    creditEventManager.addListener(loadCreditData);
+    
+    return () => {
+      clearInterval(timer);
+      creditEventManager.removeListener(loadCreditData);
+    };
+  }, [loadCreditData]);
 
   function updateTimer() {
     const now = new Date();
@@ -60,7 +89,8 @@ export function useCredits() {
     
     // Check if we've hit midnight and need to reset
     if (diff <= 0) {
-      window.location.reload();
+      loadCreditData(); // Reload instead of full page refresh
+      creditEventManager.notifyListeners();
     }
   }
 
@@ -74,6 +104,9 @@ export function useCredits() {
     
     localStorage.setItem('paperArtCredits', JSON.stringify(newData));
     setCreditData(newData);
+    
+    // Notify all other components about the credit update
+    creditEventManager.notifyListeners();
   }
 
   function hasCreditsRemaining(): boolean {

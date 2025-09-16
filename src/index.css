@@ -92,6 +92,7 @@ body {
   align-items: center;
   gap: 8px;
   box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+  transition: all 0.3s ease;
 }
 
 .credit-display.low-credits {
@@ -102,6 +103,17 @@ body {
 .credit-display.no-credits {
   background: linear-gradient(135deg, #95a5a6, #7f8c8d);
   box-shadow: 0 4px 15px rgba(149, 165, 166, 0.3);
+}
+
+.credit-display.credit-updating {
+  transform: scale(1.05);
+  animation: creditPulse 0.6s ease;
+}
+
+@keyframes creditPulse {
+  0% { box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3); }
+  50% { box-shadow: 0 6px 25px rgba(52, 152, 219, 0.5); }
+  100% { box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3); }
 }
 
 .credit-icon {
@@ -281,11 +293,29 @@ body {
   box-shadow: 0 8px 30px rgba(0,0,0,0.05);
   backdrop-filter: blur(10px);
   border-left: 4px solid #27ae60;
+  transition: all 0.3s ease;
 }
 
 .credit-info.no-credits {
   border-left-color: #e74c3c;
   background: linear-gradient(135deg, rgba(231, 76, 60, 0.05), rgba(192, 57, 43, 0.05));
+}
+
+.credit-info.credit-updating {
+  transform: scale(1.02);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.1);
+  border-left-color: #3498db;
+}
+
+.credit-info.credit-updating .credit-number {
+  animation: creditBounce 0.6s ease;
+  color: #3498db;
+}
+
+@keyframes creditBounce {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
 }
 
 .credit-stats {

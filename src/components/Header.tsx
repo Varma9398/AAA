@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useCredits } from '../hooks/useCredits';
 
 interface HeaderProps {
@@ -9,11 +9,26 @@ interface HeaderProps {
 
 export function Header({ onSignIn, showCredits, onBackToHome }: HeaderProps) {
   const { creditData } = useCredits();
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [prevCredits, setPrevCredits] = useState(creditData.creditsRemaining);
+
+  // Animate when credits change
+  useEffect(() => {
+    if (prevCredits !== creditData.creditsRemaining && showCredits) {
+      setIsUpdating(true);
+      const timer = setTimeout(() => setIsUpdating(false), 600);
+      setPrevCredits(creditData.creditsRemaining);
+      return () => clearTimeout(timer);
+    }
+  }, [creditData.creditsRemaining, prevCredits, showCredits]);
 
   const getCreditDisplayClass = () => {
-    if (creditData.creditsRemaining === 0) return 'credit-display no-credits';
-    if (creditData.creditsRemaining <= 3) return 'credit-display low-credits';
-    return 'credit-display';
+    let baseClass;
+    if (creditData.creditsRemaining === 0) baseClass = 'credit-display no-credits';
+    else if (creditData.creditsRemaining <= 3) baseClass = 'credit-display low-credits';
+    else baseClass = 'credit-display';
+    
+    return isUpdating ? `${baseClass} credit-updating` : baseClass;
   };
 
   return (
