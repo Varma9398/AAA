@@ -12,7 +12,7 @@ export function Landing() {
   const [displayedImages, setDisplayedImages] = useState<GalleryImage[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const batchSize = 12;
+  const batchSize = 23;
   const totalImages = 23;
 
   // Load state from localStorage on component mount
@@ -40,7 +40,7 @@ export function Landing() {
         id: `img-${i}`,
         src: `/images/${num}.${extension}`,
         title: `Image ${num}`,
-        description: `AI Generated Image ${num}`
+        description: `Signin to generate`
       });
     }
     setGalleryImages(images);
