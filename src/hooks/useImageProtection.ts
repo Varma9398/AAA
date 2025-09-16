@@ -34,27 +34,11 @@ export function useImageProtection() {
     document.addEventListener('contextmenu', disableContextMenu);
     document.addEventListener('selectstart', disableSelection);
 
-    // Monitor for console access attempts
-    let consoleWarningShown = false;
-    
-    // Override console methods (simplified approach)
-    const originalLog = console.log;
-    console.log = function (...args: any[]) {
-      if (!consoleWarningShown) {
-        consoleWarningShown = true;
-        alert('Console access is not allowed on this website.');
-      }
-      return originalLog.apply(console, args);
-    };
-
     // Cleanup function
     return () => {
       document.removeEventListener('dragstart', disableImageDrag);
       document.removeEventListener('contextmenu', disableContextMenu);
       document.removeEventListener('selectstart', disableSelection);
-      
-      // Restore original console
-      console.log = originalLog;
     };
   }, []);
 
