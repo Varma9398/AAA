@@ -76,6 +76,38 @@ export const storageUtils = {
     });
   },
 
+  // Clear specific user data (for GDPR compliance)
+  clearUserData(): void {
+    // Remove user-specific data but keep app preferences
+    storageUtils.removeItem(STORAGE_KEYS.IMAGE_HISTORY);
+    storageUtils.removeItem(STORAGE_KEYS.USER_SESSION);
+    storageUtils.removeItem(STORAGE_KEYS.PAPER_ART_CREDITS);
+    // Keep: landingPageState, userPreferences (non-personal)
+  },
+
+  // Clear everything including preferences
+  factoryReset(): void {
+    try {
+      // Clear all localStorage for this domain
+      localStorage.clear();
+      console.log('All user data has been deleted.');
+    } catch (error) {
+      console.error('Failed to clear all data:', error);
+    }
+  },
+
+  // Get all stored data (for data export/viewing)
+  getAllUserData(): Record<string, any> {
+    const userData: Record<string, any> = {};
+    Object.entries(STORAGE_KEYS).forEach(([name, key]) => {
+      const data = storageUtils.getItem(key, null);
+      if (data) {
+        userData[name] = data;
+      }
+    });
+    return userData;
+  },
+
   // Get storage usage info
   getStorageInfo(): { used: number; total: number; percentage: number } {
     let used = 0;

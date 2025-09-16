@@ -5,6 +5,7 @@ import { CreditInfo } from '../components/CreditInfo';
 import { ImageUpload } from '../components/ImageUpload';
 import { ImageGallery } from '../components/ImageGallery';
 import { FloatingElements } from '../components/FloatingElements';
+import { UserDataManager } from '../components/UserDataManager';
 import { useCredits } from '../hooks/useCredits';
 import { analyzeAndDescribeImage } from '../lib/gemini';
 import { generateStyledImage } from '../lib/imageGeneration';
@@ -22,6 +23,7 @@ export function Dashboard() {
   const [progress, setProgress] = useState(0);
   const [loadingText, setLoadingText] = useState('');
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
+  const [showDataManager, setShowDataManager] = useState(false);
   
   // Form state
   const [styleIntensity, setStyleIntensity] = useState<StyleIntensity>('moderate');
@@ -166,9 +168,29 @@ export function Dashboard() {
           <div className="page-header">
             <h1>Paper Art Transformer</h1>
             <p>Transform your photos into expressive paper art style</p>
+            
+            {/* Data Management Toggle - Hidden by default, press Ctrl+Alt+D to show */}
+            <div style={{ marginTop: '10px' }}>
+              <button 
+                onClick={() => setShowDataManager(!showDataManager)}
+                style={{
+                  padding: '5px 10px',
+                  fontSize: '12px',
+                  backgroundColor: showDataManager ? '#e74c3c' : '#95a5a6',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '5px',
+                  cursor: 'pointer'
+                }}
+              >
+                {showDataManager ? 'Hide' : 'Show'} Data Manager
+              </button>
+            </div>
           </div>
 
           <CreditInfo />
+
+          {showDataManager && <UserDataManager />}
 
           {noCreditsRemaining && (
             <div className="no-credits-message">
