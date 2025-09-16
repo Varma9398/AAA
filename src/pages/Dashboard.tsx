@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Header } from '../components/Header';
 import { CreditInfo } from '../components/CreditInfo';
@@ -12,11 +12,12 @@ import type { GeneratedImage, StyleIntensity, AspectRatio } from '../types';
 
 export function Dashboard() {
   const navigate = useNavigate();
-  const { creditData, timeUntilReset, deductCredit, hasCreditsRemaining, CREDIT_COST_PER_IMAGE } = useCredits();
+  const { creditData, deductCredit, hasCreditsRemaining, CREDIT_COST_PER_IMAGE } = useCredits();
   
   const [uploadedImageData, setUploadedImageData] = useState<string>('');
   const [uploadedImageBase64, setUploadedImageBase64] = useState<string>('');
   const [generatedImages, setGeneratedImages] = useState<GeneratedImage[]>([]);
+  const [imageHistory, setImageHistory] = useState<GeneratedImage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [loadingText, setLoadingText] = useState('');
@@ -26,10 +27,33 @@ export function Dashboard() {
   const [styleIntensity, setStyleIntensity] = useState<StyleIntensity>('moderate');
   const [aspectRatio, setAspectRatio] = useState<AspectRatio>('1:1');
 
+  // Load image history from localStorage on component mount
+  useEffect(() => {
+    const savedHistory = localStorage.getItem('imageHistory');
+    if (savedHistory) {
+      try {
+        setImageHistory(JSON.parse(savedHistory));
+      } catch (error) {
+        console.error('Failed to load image history:', error);
+      }
+    }
+  }, []);
+
+  // Save image history to localStorage whenever it updates
+  useEffect(() => {
+    if (imageHistory.length > 0) {
+      localStorage.setItem('imageHistory', JSON.stringify(imageHistory));
+    }
+  }, [imageHistory]);
+
   const handleImageSelect = useCallback((imageData: string, imageBase64: string) => {
     setUploadedImageData(imageData);
     setUploadedImageBase64(imageBase64);
   }, []);
+
+  const handlePaperStyleClick = () => {
+    showMessage('Currently I have added only one style for MVP', 'error');
+  };
 
   const updateProgress = (percent: number) => {
     setProgress(percent);
@@ -82,6 +106,10 @@ export function Dashboard() {
           // Deduct credit only after successful generation
           deductCredit();
           setGeneratedImages([newImage]);
+          
+          // Add to history
+          setImageHistory(prev => [newImage, ...prev]);
+          
           showMessage('Successfully generated paper art transformation!', 'success');
         }
       }
@@ -117,10 +145,7 @@ export function Dashboard() {
           {noCreditsRemaining && (
             <div className="no-credits-message">
               <h3>🎨 You've used all your daily credits!</h3>
-              <p>You've generated <strong>10 amazing artworks</strong> today. Your credits will reset in:</p>
-              <div className="timer">
-                {timeUntilReset.hours}:{timeUntilReset.minutes}:{timeUntilReset.seconds}
-              </div>
+              <p>You've generated <strong>10 amazing artworks</strong> today.</p>
               <p style={{ marginTop: '15px', fontSize: '14px' }}>
                 Come back tomorrow for 10 fresh credits to create more paper art masterpieces!
               </p>
@@ -133,9 +158,6 @@ export function Dashboard() {
                 <span className="status-indicator"></span>
                 Paper Art Generator
               </h3>
-              <p style={{ color: '#6f7a83', fontSize: '14px', marginBottom: '20px' }}>
-                Upload an image to transform it into expressive paper art with vibrant colors and abstract elements
-              </p>
             </div>
 
             <ImageUpload onImageSelect={handleImageSelect} />
@@ -143,7 +165,7 @@ export function Dashboard() {
             <div className="advanced-options">
               <div className="input-group">
                 <label htmlFor="artStyle">Art Style:</label>
-                <select id="artStyle" value="paper" disabled>
+                <select id="artStyle" value="paper" disabled onClick={handlePaperStyleClick}>
                   <option value="paper">Paper Art Style</option>
                 </select>
               </div>
@@ -217,6 +239,13 @@ export function Dashboard() {
           </div>
 
           <ImageGallery images={generatedImages} />
+          
+          {imageHistory.length > 0 && (
+            <div className="history-section">
+              <h2 style={{ marginBottom: '20px', color: '#2c3e50' }}>Generated Images History</h2>
+              <ImageGallery images={imageHistory} />
+            </div>
+          )}
         </div>
       </main>
 

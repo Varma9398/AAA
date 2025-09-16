@@ -2,7 +2,7 @@ import React from 'react';
 import { useCredits } from '../hooks/useCredits';
 
 export function CreditInfo() {
-  const { creditData, timeUntilReset, DAILY_CREDIT_LIMIT } = useCredits();
+  const { creditData, DAILY_CREDIT_LIMIT } = useCredits();
 
   const getCreditInfoClass = () => {
     return creditData.creditsRemaining === 0 ? 'credit-info no-credits' : 'credit-info';
@@ -23,9 +23,6 @@ export function CreditInfo() {
           <div className="credit-number">{DAILY_CREDIT_LIMIT}</div>
           <div className="credit-label">Daily Limit</div>
         </div>
-      </div>
-      <div className="reset-timer">
-        Credits reset in: <strong>{timeUntilReset.hours}:{timeUntilReset.minutes}:{timeUntilReset.seconds}</strong>
       </div>
     </div>
   );
