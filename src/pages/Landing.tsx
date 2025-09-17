@@ -13,6 +13,7 @@ export function Landing() {
   const navigate = useNavigate();
   const [visibleImages, setVisibleImages] = useState(20);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [showVideoModal, setShowVideoModal] = useState(false);
 
   // Image gallery data - matching your Figma design
   const imageData: ImageItem[] = [
@@ -63,6 +64,9 @@ export function Landing() {
               <h1>AiCloudGen</h1>
             </div>
             <div className="figma-header-actions">
+              <button className="figma-how-it-works" onClick={() => setShowVideoModal(true)}>
+                🎥 How it Works
+              </button>
               <button className="figma-start-free" onClick={handleStartFree}>
                 <span className="free-badge">🎆 FREE</span>
                 Start Free
@@ -124,6 +128,50 @@ export function Landing() {
         </div>
       </section>
 
+      {/* Export Aspect Ratios CTA */}
+      <section className="export-cta-section">
+        <div className="figma-container">
+          <div className="export-cta-content">
+            <div className="export-cta-text">
+              <h2 className="export-cta-title">
+                📱 Export to Any Device Ratio
+              </h2>
+              <p className="export-cta-description">
+                Create once, export everywhere! Generate stunning AI images and export them perfectly optimized for:
+              </p>
+              <div className="aspect-ratios-grid">
+                <div className="ratio-item">
+                  <div className="ratio-icon">📱</div>
+                  <span>Mobile Stories</span>
+                  <small>9:16</small>
+                </div>
+                <div className="ratio-item">
+                  <div className="ratio-icon">🖥️</div>
+                  <span>Desktop</span>
+                  <small>16:9</small>
+                </div>
+                <div className="ratio-item">
+                  <div className="ratio-icon">🖼️</div>
+                  <span>Square Posts</span>
+                  <small>1:1</small>
+                </div>
+                <div className="ratio-item">
+                  <div className="ratio-icon">📷</div>
+                  <span>Print Ready</span>
+                  <small>4:3</small>
+                </div>
+              </div>
+            </div>
+            <div className="export-cta-action">
+              <button className="export-cta-btn" onClick={handleStartFree}>
+                ✨ Start Creating Multi-Format Images
+                <span className="export-cta-subtitle">No technical skills required</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="figma-footer">
         <div className="figma-container">
@@ -137,6 +185,28 @@ export function Landing() {
         onClose={() => setIsAuthModalOpen(false)}
         onSuccess={handleAuthSuccess}
       />
+
+      {/* Video Modal */}
+      {showVideoModal && (
+        <div className="video-modal" onClick={() => setShowVideoModal(false)}>
+          <div className="video-modal-content" onClick={(e) => e.stopPropagation()}>
+            <button className="video-close-btn" onClick={() => setShowVideoModal(false)}>
+              ×
+            </button>
+            <div className="video-wrapper">
+              <iframe
+                width="100%"
+                height="100%"
+                src="https://www.youtube.com/embed/KpyVDMt9oNs?si=TJcu6YfM5bFR9Tv1&autoplay=1"
+                title="How AiCloudGen Works"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+              ></iframe>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
